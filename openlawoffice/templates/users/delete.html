@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Delete {{ user.full_name }} &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Settings / Users</p>
+    <h1>Delete user</h1>
+    <p class="lede">This action permanently removes the account.</p>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-secondary" href="{{ url_for('users.index') }}">Back to users</a>
+  </div>
+</div>
+
+{% include "settings/_nav.html" %}
+
+<section class="panel delete-panel">
+  <span class="delete-warning-icon" aria-hidden="true">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+  </span>
+  <h2>Delete {{ user.full_name }}?</h2>
+  <p class="delete-warning-copy">
+    This permanently deletes <strong>{{ user.username }}</strong>
+    ({{ user.email }}) and their ability to sign in. Their matters and audit
+    history will remain, but attribution to this user will be cleared.
+  </p>
+
+  <dl class="detail-list delete-summary">
+    <div>
+      <dt>Username</dt>
+      <dd>{{ user.username or "—" }}</dd>
+    </div>
+    <div>
+      <dt>Role</dt>
+      <dd>{{ user.professional_role or "—" }}</dd>
+    </div>
+    <div>
+      <dt>Access</dt>
+      <dd>{{ "Administrator" if user.is_admin else "User" }}</dd>
+    </div>
+  </dl>
+
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="settings-actions delete-actions">
+      <a class="button button-secondary" href="{{ url_for('users.index') }}">Cancel</a>
+      <button type="submit" class="button button-danger">Delete user permanently</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

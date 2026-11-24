@@ -9,7 +9,14 @@ from sqlalchemy import select
 from openlawoffice.extensions import db
 from openlawoffice.models import AuditEvent, User
 
-from .conftest import ADMIN_EMAIL, ADMIN_NAME, ADMIN_PASSWORD, create_admin, make_app
+from .conftest import (
+    ADMIN_EMAIL,
+    ADMIN_NAME,
+    ADMIN_PASSWORD,
+    ADMIN_USERNAME,
+    create_admin,
+    make_app,
+)
 
 
 def test_uninitialized_app_redirects_to_setup(client):
@@ -47,8 +54,10 @@ def test_setup_creates_admin_and_signs_in(app, client):
     with app.app_context():
         user = db.session.scalar(select(User))
         assert user is not None
+        assert user.username == ADMIN_USERNAME
         assert user.email == ADMIN_EMAIL
         assert user.full_name == ADMIN_NAME
+        assert user.professional_role == "Associate"
         assert user.role == "admin"
         assert user.active is True
         assert user.last_login_at is not None
@@ -74,6 +83,7 @@ def test_setup_is_locked_after_completion(client):
     response = client.post(
         "/setup",
         data={
+            "username": ADMIN_USERNAME,
             "full_name": "Second Admin",
             "email": "second@example.com",
             "password": "Second-Administrator-42",
@@ -87,6 +97,7 @@ def test_weak_password_is_rejected(app, client):
     response = client.post(
         "/setup",
         data={
+            "username": ADMIN_USERNAME,
             "full_name": ADMIN_NAME,
             "email": ADMIN_EMAIL,
             "password": "short",
@@ -104,6 +115,7 @@ def test_password_mismatch_is_rejected(app, client):
     response = client.post(
         "/setup",
         data={
+            "username": ADMIN_USERNAME,
             "full_name": ADMIN_NAME,
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD,
@@ -134,6 +146,7 @@ def test_setup_token_is_enforced(tmp_path):
     response = client.post(
         "/setup",
         data={
+            "username": ADMIN_USERNAME,
             "full_name": ADMIN_NAME,
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD,
@@ -152,6 +165,7 @@ def test_setup_token_is_enforced(tmp_path):
     response = client.post(
         "/setup",
         data={
+            "username": ADMIN_USERNAME,
             "full_name": ADMIN_NAME,
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD,
@@ -169,6 +183,7 @@ def test_csrf_is_required_for_setup(tmp_path):
     response = client.post(
         "/setup",
         data={
+            "username": ADMIN_USERNAME,
             "full_name": ADMIN_NAME,
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD,
@@ -186,6 +201,7 @@ def test_csrf_is_required_for_setup(tmp_path):
         "/setup",
         data={
             "csrf_token": match.group(1).decode(),
+            "username": ADMIN_USERNAME,
             "full_name": ADMIN_NAME,
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD,

@@ -91,6 +91,7 @@
         </span>
       </li>
       {% endif %}
+      {% if current_user.is_admin %}
       <li class="{% if matter_count %}is-done{% endif %}"
           data-checklist-item="first-matter"
           data-complete="{{ 'true' if matter_count else 'false' }}">
@@ -107,6 +108,7 @@
           </small>
         </span>
       </li>
+      {% endif %}
       <li>
         <span class="check" aria-hidden="true"></span>
         <span><strong>Track billable time</strong><small>Timer and manual entries are planned.</small></span>

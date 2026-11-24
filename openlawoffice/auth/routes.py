@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_user, logout_user
-from sqlalchemy import select
+from sqlalchemy import or_, select
 
 from ..extensions import db
 from ..models import User, record_event, utcnow
@@ -13,14 +13,13 @@ from ..security import (
     clear_failed_logins,
     is_locked,
     is_safe_redirect,
-    normalize_email,
     register_failed_login,
 )
 from .forms import LoginForm
 
 bp = Blueprint("auth", __name__)
 
-GENERIC_LOGIN_ERROR = "Invalid email address or password."
+GENERIC_LOGIN_ERROR = "Invalid username/email or password."
 
 
 @bp.route("/login", methods=["GET", "POST"])
@@ -30,13 +29,18 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        email = normalize_email(form.email.data)
+        identifier = (form.identifier.data or "").strip().lower()
         password = form.password.data or ""
-        user = db.session.scalar(select(User).where(User.email == email))
+        user = db.session.scalar(
+            select(User).where(
+                or_(User.email == identifier, User.username == identifier)
+            )
+        )
 
         if user is not None and is_locked(user):
             record_event(
-                "auth.login.blocked", detail={"reason": "locked", "email": email}
+                "auth.login.blocked",
+                detail={"reason": "locked", "identifier": identifier},
             )
             db.session.commit()
             flash(
@@ -71,7 +75,7 @@ def login():
             "auth.login.failed",
             actor=user,
             detail={
-                "email": email,
+                "identifier": identifier,
                 "reason": "unknown_account" if user is None else "bad_password",
             },
         )

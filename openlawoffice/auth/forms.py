@@ -4,19 +4,18 @@ from __future__ import annotations
 
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, StringField, SubmitField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms.validators import DataRequired, Length
 
 PASSWORD_MAX_LENGTH = 128
 
 
 class LoginForm(FlaskForm):
-    email = StringField(
-        "Email address",
-        validators=[DataRequired(), Email(), Length(max=255)],
+    identifier = StringField(
+        "Username or email",
+        validators=[DataRequired(), Length(max=255)],
         render_kw={
             "autocomplete": "username",
             "autofocus": True,
-            "inputmode": "email",
             "spellcheck": "false",
         },
     )

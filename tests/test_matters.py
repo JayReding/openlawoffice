@@ -50,7 +50,7 @@ def create_member(
     client.post("/logout")
     return client.post(
         "/login",
-        data={"email": email, "password": password},
+        data={"identifier": email, "password": password},
         follow_redirects=True,
     )
 
@@ -388,23 +388,60 @@ def test_description_length_is_limited(app, client):
         assert db.session.scalar(select(Matter.id)) is None
 
 
-def test_member_can_create_matter(app, client):
+def test_member_can_view_matters_but_cannot_create_them(app, client):
     create_admin(client)
     type_id = matter_type_id(app, "Immigration")
-    create_member(app, client)
-
-    response = submit_matter(
+    submit_matter(
         client,
         type_id,
         title="Visa Petition",
         description="Prepare and file a family-based petition.",
     )
-    assert response.status_code == 200
-    assert b"Visa Petition" in response.data
 
     with app.app_context():
         matter = db.session.scalar(select(Matter))
-        assert matter.created_by.email == "member@example.com"
+        matter_id = matter.id
+
+    create_member(app, client)
+
+    listing = client.get("/matters")
+    assert listing.status_code == 200
+    assert b"Visa Petition" in listing.data
+    assert b"New matter" not in listing.data
+
+    detail = client.get(f"/matters/{matter_id}")
+    assert detail.status_code == 200
+    assert b"Visa Petition" in detail.data
+
+    response = client.get("/matters/new")
+    assert response.status_code == 403
+
+    response = submit_matter(
+        client,
+        type_id,
+        title="Member Created Matter",
+        description="This must not be created.",
+    )
+    assert response.status_code == 403
+
+    with app.app_context():
+        assert db.session.scalar(select(func.count(Matter.id))) == 1
+
+
+def test_member_empty_matter_list_has_no_create_action(app, client):
+    create_admin(client)
+    create_member(app, client)
+
+    response = client.get("/matters")
+    assert response.status_code == 200
+    assert b"No matters yet" in response.data
+    assert b"An administrator can create the first matter" in response.data
+    assert b"New matter" not in response.data
+    assert b"Create your first matter" not in response.data
+
+    dashboard = client.get("/dashboard")
+    assert b"Create your first matter" not in dashboard.data
+    assert b"Add your first matter" not in dashboard.data
 
 
 def test_matter_detail_returns_404_for_unknown_matter(client):

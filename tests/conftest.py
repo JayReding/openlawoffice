@@ -9,6 +9,7 @@ from openlawoffice.extensions import db
 
 ADMIN_EMAIL = "admin@example.com"
 ADMIN_NAME = "Ada Attorney"
+ADMIN_USERNAME = "ada"
 ADMIN_PASSWORD = "Willow-Meadow-Cobalt-42"
 
 
@@ -46,6 +47,7 @@ def client(app):
 @pytest.fixture()
 def setup_payload():
     return {
+        "username": ADMIN_USERNAME,
         "full_name": ADMIN_NAME,
         "email": ADMIN_EMAIL,
         "password": ADMIN_PASSWORD,
@@ -55,6 +57,7 @@ def setup_payload():
 
 def create_admin(client, payload=None, *, follow_redirects=False, **extra):
     data = payload or {
+        "username": ADMIN_USERNAME,
         "full_name": ADMIN_NAME,
         "email": ADMIN_EMAIL,
         "password": ADMIN_PASSWORD,

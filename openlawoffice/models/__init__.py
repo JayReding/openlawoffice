@@ -7,13 +7,21 @@ from .audit import AuditEvent, record_event
 from .firm import Firm
 from .matter import Matter, MatterType
 from .types import UTCDateTime, utcnow
-from .user import ROLE_ADMIN, ROLE_MEMBER, User
+from .user import (
+    PROFESSIONAL_ROLE_DEFAULT,
+    PROFESSIONAL_ROLES,
+    ROLE_ADMIN,
+    ROLE_MEMBER,
+    User,
+)
 
 __all__ = [
     "AuditEvent",
     "Firm",
     "Matter",
     "MatterType",
+    "PROFESSIONAL_ROLE_DEFAULT",
+    "PROFESSIONAL_ROLES",
     "ROLE_ADMIN",
     "ROLE_MEMBER",
     "UTCDateTime",

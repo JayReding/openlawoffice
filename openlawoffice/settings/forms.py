@@ -13,6 +13,7 @@ from wtforms.validators import DataRequired, Email, Length, Optional, Validation
 
 from ..security import normalize_email
 from ..us_states import US_STATES
+from ..validation import normalize_postal_code, normalize_us_phone
 
 US_STATE_CHOICES = [SelectChoice("", "Select a state")] + [
     SelectChoice(code, label) for code, label in US_STATES
@@ -88,23 +89,18 @@ class FirmSettingsForm(FlaskForm):
     def validate_postal_code(self, field):
         if not field.data:
             return
-        digits = re.sub(r"\D", "", field.data)
-        if len(digits) == 5:
-            field.data = digits
-        elif len(digits) == 9:
-            field.data = f"{digits[:5]}-{digits[5:]}"
-        else:
-            raise ValidationError("Enter a 5-digit ZIP code or ZIP+4.")
+        try:
+            field.data = normalize_postal_code(field.data)
+        except ValueError as exc:
+            raise ValidationError(str(exc)) from exc
 
     def validate_telephone(self, field):
         if not field.data:
             return
-        digits = re.sub(r"\D", "", field.data)
-        if len(digits) == 11 and digits.startswith("1"):
-            digits = digits[1:]
-        if len(digits) != 10:
-            raise ValidationError("Enter a 10-digit U.S. telephone number.")
-        field.data = f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
+        try:
+            field.data = normalize_us_phone(field.data)
+        except ValueError as exc:
+            raise ValidationError(str(exc)) from exc
 
     def validate_email(self, field):
         field.data = normalize_email(field.data) or ""

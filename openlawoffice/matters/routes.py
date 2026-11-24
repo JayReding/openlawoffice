@@ -6,6 +6,7 @@ from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 from sqlalchemy import select
 
+from ..auth.decorators import admin_required
 from ..extensions import db
 from ..models import Matter, MatterType, record_event
 from .forms import MatterForm
@@ -23,7 +24,7 @@ def index():
 
 
 @bp.route("/new", methods=["GET", "POST"])
-@login_required
+@admin_required
 def create():
     form = MatterForm()
 

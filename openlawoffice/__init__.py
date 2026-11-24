@@ -65,12 +65,14 @@ def _register_blueprints(app: Flask) -> None:
     from .matters import bp as matters_bp
     from .settings import bp as settings_bp
     from .setup import bp as setup_bp
+    from .users import bp as users_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(setup_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(matters_bp)
     app.register_blueprint(settings_bp)
+    app.register_blueprint(users_bp)
 
 
 def _register_request_hooks(app: Flask) -> None:
@@ -237,10 +239,12 @@ def create_app(test_config: dict | None = None) -> Flask:
     # first-run setup screen. Existing tables and columns are untouched.
     from .bootstrap import ensure_schema
     from .matter_seed import seed_default_matter_types
+    from .schema_upgrades import upgrade_user_schema
 
     with app.app_context():
         try:
             ensure_schema()
+            upgrade_user_schema()
             seed_default_matter_types()
         except SQLAlchemyError:
             db.session.rollback()

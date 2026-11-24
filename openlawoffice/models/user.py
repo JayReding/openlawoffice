@@ -15,15 +15,38 @@ from .types import UTCDateTime, utcnow
 ROLE_ADMIN = "admin"
 ROLE_MEMBER = "member"
 
+PROFESSIONAL_ROLE_DEFAULT = "Associate"
+PROFESSIONAL_ROLES = (
+    "Associate",
+    "Partner",
+    "Of Counsel",
+    "Attorney",
+    "Paralegal",
+    "Staff",
+)
+
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str | None] = mapped_column(
+        String(50), unique=True, index=True, nullable=True
+    )
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    # Access level for authorization. Professional role is a separate field.
     role: Mapped[str] = mapped_column(String(20), default=ROLE_MEMBER, nullable=False)
+    professional_role: Mapped[str] = mapped_column(
+        String(40),
+        default=PROFESSIONAL_ROLE_DEFAULT,
+        server_default=PROFESSIONAL_ROLE_DEFAULT,
+        nullable=False,
+    )
+    telephone: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    office: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    department: Mapped[str | None] = mapped_column(String(100), nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     failed_login_count: Mapped[int] = mapped_column(default=0, nullable=False)
@@ -55,4 +78,4 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self) -> str:  # pragma: no cover - debugging aid
-        return f"<User {self.email} ({self.role})>"
+        return f"<User {self.username or self.email} ({self.role})>"

@@ -9,8 +9,9 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from .bootstrap import ensure_schema
 from .extensions import db
-from .models import ROLE_ADMIN, User, record_event
+from .models import PROFESSIONAL_ROLE_DEFAULT, ROLE_ADMIN, User, record_event
 from .security import normalize_email, password_policy_errors
+from .validation import normalize_username, username_error
 
 
 def _validated_email(raw: str) -> str:
@@ -19,6 +20,14 @@ def _validated_email(raw: str) -> str:
     except EmailNotValidError as exc:
         raise click.ClickException(f"Invalid email address: {exc}") from exc
     return normalize_email(result.normalized)
+
+
+def _validated_username(raw: str) -> str:
+    username = normalize_username(raw)
+    error = username_error(username)
+    if error:
+        raise click.ClickException(error)
+    return username
 
 
 def _validated_name(raw: str) -> str:
@@ -39,36 +48,58 @@ def init_db_command() -> None:
 
 
 @click.command("create-admin")
+@click.option("--username", prompt="Username")
 @click.option("--name", prompt="Full name")
 @click.option("--email", prompt="Email address")
 @click.password_option("--password", prompt="Password", confirmation_prompt=True)
-def create_admin_command(email: str, name: str, password: str) -> None:
+def create_admin_command(username: str, email: str, name: str, password: str) -> None:
     """Create an additional administrator account."""
     try:
         ensure_schema()
     except SQLAlchemyError as exc:
         raise click.ClickException(f"Could not initialize the database: {exc}") from exc
 
+    username = _validated_username(username)
     email = _validated_email(email)
     name = _validated_name(name)
     errors = password_policy_errors(password, email=email, full_name=name)
     if errors:
         raise click.ClickException(" ".join(errors))
 
-    if db.session.scalar(select(User.id).where(User.email == email)) is not None:
-        raise click.ClickException(f"An account with {email} already exists.")
+    if (
+        db.session.scalar(
+            select(User.id).where((User.email == email) | (User.username == username))
+        )
+        is not None
+    ):
+        raise click.ClickException(
+            f"An account with {email} or {username} already exists."
+        )
 
-    user = User(email=email, full_name=name, role=ROLE_ADMIN, active=True)
+    user = User(
+        username=username,
+        email=email,
+        full_name=name,
+        role=ROLE_ADMIN,
+        professional_role=PROFESSIONAL_ROLE_DEFAULT,
+        active=True,
+    )
     user.set_password(password)
     db.session.add(user)
     try:
         db.session.flush()
-        record_event("admin.created", actor=user, detail={"email": user.email})
+        record_event(
+            "admin.created",
+            actor=user,
+            detail={"email": user.email, "username": user.username},
+        )
         db.session.commit()
     except IntegrityError as exc:
         db.session.rollback()
-        raise click.ClickException("That email address is already in use.") from exc
-    click.echo(f"Administrator {user.email} created.")
+        raise click.ClickException(
+            "That email address or username is already in use."
+        ) from exc
+    click.echo(f"Administrator {user.username} ({user.email}) created.")
 
 
 @click.command("reset-password")

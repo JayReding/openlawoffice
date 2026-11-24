@@ -16,7 +16,14 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from ..bootstrap import database_label, ensure_schema, is_initialized, mark_initialized
 from ..extensions import db
-from ..models import ROLE_ADMIN, Firm, User, record_event, utcnow
+from ..models import (
+    PROFESSIONAL_ROLE_DEFAULT,
+    ROLE_ADMIN,
+    Firm,
+    User,
+    record_event,
+    utcnow,
+)
 from ..security import secure_compare
 from .forms import SetupForm
 
@@ -63,9 +70,11 @@ def index():
 
         if not form.setup_token.errors:
             user = User(
+                username=form.username.data,
                 email=form.email.data,
                 full_name=form.full_name.data.strip(),
                 role=ROLE_ADMIN,
+                professional_role=PROFESSIONAL_ROLE_DEFAULT,
                 active=True,
             )
             user.set_password(form.password.data)
@@ -81,7 +90,9 @@ def index():
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
-                form.email.errors.append("An account with that email already exists.")
+                form.email.errors.append(
+                    "An account with that email or username already exists."
+                )
             except SQLAlchemyError:
                 db.session.rollback()
                 current_app.logger.exception(

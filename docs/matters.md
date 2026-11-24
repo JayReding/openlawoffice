@@ -61,8 +61,8 @@ integrity errors prevents duplicates across restarts and concurrent workers.
 
 ## Permissions
 
-- All signed-in users can view the matter list, create matters, and view matter
-  details.
+- All signed-in users can view the matter list and matter details.
+- Only administrators can create matters.
 - Only administrators can manage matter types at `/settings/matter-types`.
 - Matter type creation uses the same admin guard as firm settings.
 
@@ -99,7 +99,7 @@ normal HTML escaping.
 | Route | Access | Purpose |
 | --- | --- | --- |
 | `/matters` | Signed in | Matter list |
-| `/matters/new` | Signed in | Create a matter |
+| `/matters/new` | Administrator | Create a matter |
 | `/matters/<id>` | Signed in | Matter detail |
 | `/settings/matter-types` | Administrator | List and add matter types |
 | `/settings/matter-types/<id>/toggle` | Administrator | Deactivate/reactivate |
@@ -107,8 +107,9 @@ normal HTML escaping.
 ## Dashboard integration
 
 - The Matters stat card shows the current matter count and links to the list.
-- The “Add your first matter” checklist item is marked complete when at least
-  one matter exists.
+- For administrators, the “Add your first matter” checklist item is marked
+  complete when at least one matter exists. Non-admin users do not see this
+  checklist item because they cannot create matters.
 
 ## Audit events
 
@@ -132,5 +133,5 @@ changed.
 - Custom type creation and duplicate normalization.
 - Inactive type behavior and last-active-type protection.
 - Matter creation, optional descriptions, validation, list, and detail.
-- Member access to matters but not type management.
+- Member access to matter viewing but not creation or type management.
 - Audit events and dashboard checklist updates.

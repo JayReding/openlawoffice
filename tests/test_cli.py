@@ -17,6 +17,7 @@ def test_create_admin_prompts_in_logical_order(app):
     result = runner.invoke(
         args=["create-admin"],
         input=(
+            "grace\n"
             "Grace Partner\n"
             "grace@example.com\n"
             "Quiet-Harbor-Lantern-84\n"
@@ -29,8 +30,10 @@ def test_create_admin_prompts_in_logical_order(app):
     with app.app_context():
         user = db.session.scalar(select(User))
         assert user is not None
+        assert user.username == "grace"
         assert user.email == "grace@example.com"
         assert user.full_name == "Grace Partner"
+        assert user.professional_role == "Associate"
         assert user.role == "admin"
         assert user.check_password("Quiet-Harbor-Lantern-84")
 
@@ -40,6 +43,7 @@ def test_create_admin_rejects_duplicate_email(app):
     first = runner.invoke(
         args=["create-admin"],
         input=(
+            "grace\n"
             "Grace Partner\n"
             "grace@example.com\n"
             "Quiet-Harbor-Lantern-84\n"
@@ -51,6 +55,7 @@ def test_create_admin_rejects_duplicate_email(app):
     second = runner.invoke(
         args=["create-admin"],
         input=(
+            "another\n"
             "Another Person\n"
             "grace@example.com\n"
             "Harbor-Quiet-Lantern-84\n"
@@ -66,6 +71,7 @@ def test_reset_password_clears_lockout(app):
     runner.invoke(
         args=["create-admin"],
         input=(
+            "grace\n"
             "Grace Partner\n"
             "grace@example.com\n"
             "Quiet-Harbor-Lantern-84\n"

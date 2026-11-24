@@ -109,7 +109,7 @@ def test_non_admin_cannot_view_firm_settings(app, client):
     client.post("/logout")
     client.post(
         "/login",
-        data={"email": "member@example.com", "password": "Member-Password-42"},
+        data={"identifier": "member@example.com", "password": "Member-Password-42"},
     )
 
     response = client.get("/settings/firm")
@@ -278,7 +278,7 @@ def test_member_cannot_post_firm_settings(app, client):
     client.post("/logout")
     client.post(
         "/login",
-        data={"email": "member@example.com", "password": "Member-Password-42"},
+        data={"identifier": "member@example.com", "password": "Member-Password-42"},
     )
 
     response = client.post(
@@ -307,7 +307,7 @@ def test_existing_install_creates_firm_on_first_visit(app, client):
 
     client.post(
         "/login",
-        data={"email": "old@example.com", "password": "Existing-Password-42"},
+        data={"identifier": "old@example.com", "password": "Existing-Password-42"},
     )
 
     response = client.get("/settings/firm")

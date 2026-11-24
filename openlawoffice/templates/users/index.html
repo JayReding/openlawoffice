@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Users &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Settings</p>
+    <h1>Users</h1>
+    <p class="lede">
+      Manage firm accounts, professional roles, and sign-in credentials.
+    </p>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-primary" href="{{ url_for('users.create') }}">New user</a>
+  </div>
+</div>
+
+{% include "settings/_nav.html" %}
+
+<section class="panel matter-list-panel">
+  <div class="table-wrap">
+    <table class="data-table users-table">
+      <thead>
+        <tr>
+          <th scope="col">User</th>
+          <th scope="col">Contact</th>
+          <th scope="col">Role</th>
+          <th scope="col">Office</th>
+          <th scope="col">Access</th>
+          <th scope="col" class="table-actions-heading">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>
+              <span class="user-cell">
+                <a class="matter-link" href="{{ url_for('users.edit', user_id=user.id) }}">
+                  {{ user.full_name }}
+                </a>
+                <span class="user-meta">{{ user.username or "No username" }}</span>
+                {% if user.id == current_user.id %}
+                  <span class="chip chip-gold user-self-chip">You</span>
+                {% endif %}
+              </span>
+            </td>
+            <td>
+              <span class="user-cell">
+                <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                {% if user.telephone %}
+                  <span class="user-meta">{{ user.telephone }}</span>
+                {% endif %}
+              </span>
+            </td>
+            <td>{{ user.professional_role or "—" }}</td>
+            <td>
+              <span class="user-cell">
+                {{ user.office or "—" }}
+                {% if user.department %}
+                  <span class="user-meta">{{ user.department }}</span>
+                {% endif %}
+              </span>
+            </td>
+            <td>
+              <span class="chip {{ 'chip-gold' if user.is_admin else 'chip-muted' }}">
+                {{ "Administrator" if user.is_admin else "User" }}
+              </span>
+            </td>
+            <td class="table-actions">
+              <div class="action-group">
+                <a class="button button-secondary button-small"
+                   href="{{ url_for('users.edit', user_id=user.id) }}">Edit</a>
+                <a class="button button-secondary button-small"
+                   href="{{ url_for('users.reset_password', user_id=user.id) }}">Reset password</a>
+                {% if user.id != current_user.id %}
+                  <a class="button button-danger button-small"
+                     href="{{ url_for('users.delete', user_id=user.id) }}">Delete</a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

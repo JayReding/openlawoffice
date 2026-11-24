@@ -20,7 +20,7 @@ def test_login_success_and_logout(app, client):
 
     response = client.post(
         "/login",
-        data={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
+        data={"identifier": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
         follow_redirects=True,
     )
     assert response.status_code == 200
@@ -46,7 +46,19 @@ def test_email_is_case_insensitive(app, client):
 
     response = client.post(
         "/login",
-        data={"email": "ADMIN@EXAMPLE.COM", "password": ADMIN_PASSWORD},
+        data={"identifier": "ADMIN@EXAMPLE.COM", "password": ADMIN_PASSWORD},
+        follow_redirects=True,
+    )
+    assert b"Good to see you" in response.data
+
+
+def test_username_login(app, client):
+    create_admin(client)
+    sign_out(client)
+
+    response = client.post(
+        "/login",
+        data={"identifier": "ADA", "password": ADMIN_PASSWORD},
         follow_redirects=True,
     )
     assert b"Good to see you" in response.data
@@ -58,11 +70,11 @@ def test_wrong_password_is_rejected(app, client):
 
     response = client.post(
         "/login",
-        data={"email": ADMIN_EMAIL, "password": "Wrong-Password-12345"},
+        data={"identifier": ADMIN_EMAIL, "password": "Wrong-Password-12345"},
         follow_redirects=True,
     )
     assert response.status_code == 200
-    assert b"Invalid email address or password" in response.data
+    assert b"Invalid username/email or password" in response.data
     assert b"Good to see you" not in response.data
 
     with app.app_context():
@@ -76,11 +88,11 @@ def test_unknown_account_gets_generic_error(app, client):
 
     response = client.post(
         "/login",
-        data={"email": "nobody@example.com", "password": "Wrong-Password-12345"},
+        data={"identifier": "nobody@example.com", "password": "Wrong-Password-12345"},
         follow_redirects=True,
     )
     assert response.status_code == 200
-    assert b"Invalid email address or password" in response.data
+    assert b"Invalid username/email or password" in response.data
 
 
 def test_account_locks_after_repeated_failures(app, client):
@@ -90,7 +102,7 @@ def test_account_locks_after_repeated_failures(app, client):
     for _ in range(3):
         client.post(
             "/login",
-            data={"email": ADMIN_EMAIL, "password": "Wrong-Password-12345"},
+            data={"identifier": ADMIN_EMAIL, "password": "Wrong-Password-12345"},
         )
 
     with app.app_context():
@@ -99,7 +111,7 @@ def test_account_locks_after_repeated_failures(app, client):
 
     response = client.post(
         "/login",
-        data={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
+        data={"identifier": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
     )
     assert response.status_code == 429
     assert b"temporarily locked" in response.data
@@ -111,11 +123,11 @@ def test_failed_and_successful_logins_are_audited(app, client):
 
     client.post(
         "/login",
-        data={"email": ADMIN_EMAIL, "password": "Wrong-Password-12345"},
+        data={"identifier": ADMIN_EMAIL, "password": "Wrong-Password-12345"},
     )
     client.post(
         "/login",
-        data={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
+        data={"identifier": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
     )
 
     with app.app_context():
@@ -131,7 +143,7 @@ def test_open_redirect_is_ignored(client):
 
     response = client.post(
         "/login?next=https://evil.example.com",
-        data={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
+        data={"identifier": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
         follow_redirects=False,
     )
     assert response.status_code == 302
@@ -145,7 +157,7 @@ def test_safe_relative_redirect_is_honored(client):
 
     response = client.post(
         "/login?next=/dashboard",
-        data={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
+        data={"identifier": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
         follow_redirects=False,
     )
     assert response.status_code == 302

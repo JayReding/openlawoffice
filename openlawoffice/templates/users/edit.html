@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_forms.html" import field %}
+
+{% block title %}Edit {{ user.full_name }} &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Settings / Users</p>
+    <h1>Edit user</h1>
+    <p class="lede">
+      Update {{ user.full_name }}&rsquo;s profile. Use the reset password action
+      from the user list to change sign-in credentials.
+    </p>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-secondary" href="{{ url_for('users.index') }}">Back to users</a>
+  </div>
+</div>
+
+{% include "settings/_nav.html" %}
+
+<form method="post" class="settings-form" novalidate>
+  {{ form.hidden_tag() }}
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>User details</h2>
+      <span class="chip {{ 'chip-gold' if user.is_admin else 'chip-muted' }}">
+        {{ "Administrator" if user.is_admin else "User" }}
+      </span>
+    </div>
+
+    <div class="form-grid">
+      <div>{{ field(form.username) }}</div>
+      <div>{{ field(form.full_name) }}</div>
+      <div>{{ field(form.email) }}</div>
+      <div>{{ field(form.telephone) }}</div>
+      <div>{{ field(form.office) }}</div>
+      <div>{{ field(form.department) }}</div>
+      <div>{{ field(form.professional_role) }}</div>
+    </div>
+  </section>
+
+  <div class="settings-actions">
+    <a class="button button-secondary" href="{{ url_for('users.index') }}">Cancel</a>
+    {{ form.submit(class_="button button-primary") }}
+  </div>
+</form>
+{% endblock %}

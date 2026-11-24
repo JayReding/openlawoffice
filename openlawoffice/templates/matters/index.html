@@ -9,9 +9,11 @@
     <h1>Matters</h1>
     <p class="lede">The work your firm is handling, organized by type and jurisdiction.</p>
   </div>
-  <div class="page-head-meta">
-    <a class="button button-primary" href="{{ url_for('matters.create') }}">New matter</a>
-  </div>
+  {% if current_user.is_admin %}
+    <div class="page-head-meta">
+      <a class="button button-primary" href="{{ url_for('matters.create') }}">New matter</a>
+    </div>
+  {% endif %}
 </div>
 
 {% if matters %}
@@ -50,8 +52,12 @@
   <section class="panel empty-state">
     <span class="empty-state-mark" aria-hidden="true">M</span>
     <h2>No matters yet</h2>
-    <p>Create the first matter to begin organizing the firm&rsquo;s work.</p>
-    <a class="button button-primary" href="{{ url_for('matters.create') }}">Create your first matter</a>
+    {% if current_user.is_admin %}
+      <p>Create the first matter to begin organizing the firm&rsquo;s work.</p>
+      <a class="button button-primary" href="{{ url_for('matters.create') }}">Create your first matter</a>
+    {% else %}
+      <p>No matters have been opened yet. An administrator can create the first matter.</p>
+    {% endif %}
   </section>
 {% endif %}
 {% endblock %}

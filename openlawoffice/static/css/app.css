@@ -1531,6 +1531,87 @@ a:focus-visible {
   text-decoration-color: var(--gold-soft);
 }
 
+.button-danger {
+  border-color: #dfb0aa;
+  background: var(--danger-wash);
+  color: #8f2a2a;
+}
+
+.button-danger:hover {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: #fff;
+}
+
+.users-table {
+  min-width: 1000px;
+}
+
+.users-table .table-actions {
+  width: auto;
+}
+
+.users-table .action-group {
+  flex-wrap: nowrap;
+}
+
+.user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  align-items: flex-start;
+}
+
+.user-meta {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.user-self-chip {
+  margin-top: 0.25rem;
+  font-size: 0.66rem;
+}
+
+.action-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+
+.delete-panel {
+  max-width: 760px;
+}
+
+.delete-warning-icon {
+  display: inline-grid;
+  width: 3.4rem;
+  height: 3.4rem;
+  margin-bottom: 1rem;
+  place-items: center;
+  border: 1px solid #dfb0aa;
+  border-radius: 50%;
+  background: var(--danger-wash);
+  color: var(--danger);
+  font-size: 1.35rem;
+}
+
+.delete-warning-copy {
+  max-width: 60ch;
+  margin-top: 0.65rem;
+  color: var(--ink-soft);
+  font-size: 0.94rem;
+}
+
+.delete-summary {
+  margin-top: 1.35rem;
+}
+
+.delete-actions {
+  margin-top: 1.5rem;
+  justify-content: flex-start;
+}
+
 @media (max-width: 900px) {
   .settings-grid {
     grid-template-columns: 1fr;

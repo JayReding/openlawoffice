@@ -28,7 +28,7 @@
         </li>
         <li class="is-current">
           <span class="step-number">2</span>
-          <span><strong>Administrator</strong><small>Name, email, and a strong password</small></span>
+          <span><strong>Administrator</strong><small>Username, name, email, and a strong password</small></span>
         </li>
         <li>
           <span class="step-number">3</span>
@@ -59,6 +59,7 @@
 
       <form method="post" class="form" novalidate>
         {{ form.hidden_tag() }}
+        {{ field(form.username, hint="Used to sign in alongside your email address.") }}
         {{ field(form.full_name) }}
         {{ field(form.email) }}
         {{ field(form.password, hint="At least 12 characters. Length beats complexity; a short passphrase works well.") }}
