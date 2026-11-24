@@ -5,23 +5,6 @@ billing, and basic CRM functions. It is intended to improve access to justice
 in the United States by ensuring that basic practice management tools are
 available to all under a permissive open source license.
 
-## Current status: application skeleton
-
-This release provides the secure foundation the rest of the application will
-build on:
-
-- A Flask application factory with blueprints and configuration via environment
-  variables or `instance/config.py`.
-- SQLAlchemy models with SQLite by default and a connection string abstraction
-  for PostgreSQL and MariaDB/MySQL later.
-- A first-run screen that creates the initial administrator account and then
-  permanently closes setup.
-- Secure sign-in with hashed passwords, CSRF protection, session rotation,
-  per-account lockout after repeated failures, and an append-only audit trail.
-- A placeholder dashboard, health check, CLI commands, and tests.
-
-Matters, timekeeping, and billing screens are intentionally not implemented
-yet. The navigation marks them as planned.
 
 ## Requirements
 
