@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "_forms.html" import field %}
 
-{% block title %}Sign in &middot; {{ app_name }}{% endblock %}
+{% block title %}Sign in &middot; {{ firm.name if firm else app_name }}{% endblock %}
 {% block body_class %}auth-shell{% endblock %}
 {% block main_class %}auth-main{% endblock %}
 
@@ -9,8 +9,19 @@
 <div class="auth-card">
   <aside class="auth-intro">
     <div class="auth-intro-top">
-      <span class="brand-mark brand-mark-light" aria-hidden="true">OL</span>
-      <span class="auth-intro-name">{{ app_name }}</span>
+      {% if firm and firm.has_logo %}
+        <span class="auth-logo-tile">
+          <img src="{{ url_for('main.firm_logo', v=firm.logo_sha256[:12]) }}"
+               width="{{ firm.logo_width }}"
+               height="{{ firm.logo_height }}"
+               alt="{{ firm.name }} logo">
+        </span>
+      {% else %}
+        <span class="brand-mark brand-mark-light" aria-hidden="true">
+          <i class="fa-solid fa-scale-balanced"></i>
+        </span>
+      {% endif %}
+      <span class="auth-intro-name">{{ firm.name if firm else app_name }}</span>
     </div>
     <div class="auth-intro-body">
       <h1>Practice Management for Open Teams</h1>

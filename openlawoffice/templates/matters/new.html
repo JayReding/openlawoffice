@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "_forms.html" import field %}
+
+{% block title %}New matter &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Matters</p>
+    <h1>New matter</h1>
+    <p class="lede">
+      Name the matter, choose its type and jurisdiction, and add any useful
+      detail. Only the description is optional.
+    </p>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-secondary" href="{{ url_for('matters.index') }}">Back to matters</a>
+  </div>
+</div>
+
+{% if not form.has_active_types %}
+  <div class="alert alert-error" role="alert">
+    No active matter types are available.
+    {% if current_user.is_admin %}
+      <a href="{{ url_for('settings.matter_types') }}">Activate or add a matter type</a>
+      before creating a matter.
+    {% else %}
+      Ask an administrator to activate a matter type.
+    {% endif %}
+  </div>
+{% endif %}
+
+<form method="post" class="settings-form" novalidate>
+  {{ form.hidden_tag() }}
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Matter details</h2>
+    </div>
+
+    {{ field(form.title) }}
+
+    <div class="form-grid">
+      <div>
+        {{ field(form.matter_type_id) }}
+        {% if current_user.is_admin %}
+          <p class="field-hint">
+            Need another type?
+            <a href="{{ url_for('settings.matter_types') }}">Manage matter types</a>.
+          </p>
+        {% endif %}
+      </div>
+      <div>{{ field(form.jurisdiction) }}</div>
+    </div>
+
+    {{ field(
+      form.description,
+      hint="Optional. Add facts, scope, goals, or other context for this matter."
+    ) }}
+  </section>
+
+  <div class="settings-actions">
+    <a class="button button-secondary" href="{{ url_for('matters.index') }}">Cancel</a>
+    {% if form.has_active_types %}
+      {{ form.submit(class_="button button-primary") }}
+    {% else %}
+      {{ form.submit(class_="button button-primary", disabled=True) }}
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

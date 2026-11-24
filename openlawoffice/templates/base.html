@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/scale-balanced.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
 <body class="{% block body_class %}app-shell{% endblock %}">
@@ -13,16 +15,33 @@
   {% if current_user.is_authenticated %}
     <header class="topbar">
       <div class="topbar-inner">
-        <a class="brand" href="{{ url_for('main.dashboard') }}" aria-label="{{ app_name }} home">
-          <span class="brand-mark" aria-hidden="true">OL</span>
-          <span class="brand-text">{{ app_name }}</span>
+        <a class="brand" href="{{ url_for('main.dashboard') }}" aria-label="{{ firm.name if firm else app_name }} home">
+          {% if firm and firm.has_logo %}
+            <span class="brand-logo-tile">
+              <img class="brand-logo"
+                   src="{{ url_for('main.firm_logo', v=firm.logo_sha256[:12]) }}"
+                   width="{{ firm.logo_width }}"
+                   height="{{ firm.logo_height }}"
+                   alt="">
+            </span>
+          {% else %}
+            <span class="brand-mark" aria-hidden="true">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </span>
+          {% endif %}
+          <span class="brand-text">{{ firm.name if firm else app_name }}</span>
         </a>
         <nav class="main-nav" aria-label="Primary">
           <a class="nav-link{% if request.endpoint == 'main.dashboard' %} is-active{% endif %}"
              href="{{ url_for('main.dashboard') }}">Dashboard</a>
-          <span class="nav-link nav-link-muted" title="Planned for a future release">Matters</span>
+          <a class="nav-link{% if request.endpoint and request.endpoint.startswith('matters.') %} is-active{% endif %}"
+             href="{{ url_for('matters.index') }}">Matters</a>
           <span class="nav-link nav-link-muted" title="Planned for a future release">Time</span>
           <span class="nav-link nav-link-muted" title="Planned for a future release">Billing</span>
+          {% if current_user.is_admin %}
+            <a class="nav-link{% if request.endpoint == 'settings.firm' %} is-active{% endif %}"
+               href="{{ url_for('settings.firm') }}">Firm Settings</a>
+          {% endif %}
         </nav>
         <div class="user-menu">
           <span class="user-name">{{ current_user.full_name }}</span>
@@ -55,6 +74,8 @@
     <span>Free software under the AGPL-3.0</span>
     <span class="footer-dot" aria-hidden="true">·</span>
     <span>&copy; {{ current_year }}</span>
+    <span class="footer-dot" aria-hidden="true">·</span>
+    <a class="footer-link" href="https://fontawesome.com" target="_blank" rel="noopener noreferrer">Icons: Font Awesome Free</a>
   </footer>
 </body>
 </html>

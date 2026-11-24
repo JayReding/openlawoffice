@@ -1,0 +1,6 @@
+<nav class="settings-nav" aria-label="Settings">
+  <a class="settings-tab{% if request.endpoint == 'settings.firm' %} is-active{% endif %}"
+     href="{{ url_for('settings.firm') }}">Firm profile</a>
+  <a class="settings-tab{% if request.endpoint == 'settings.matter_types' %} is-active{% endif %}"
+     href="{{ url_for('settings.matter_types') }}">Matter types</a>
+</nav>

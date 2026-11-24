@@ -18,7 +18,9 @@ dependencies = [
     "Flask-WTF>=1.2,<2",
     "Flask-Migrate>=4.0,<5",
     "SQLAlchemy>=2.0,<3",
+    "WTForms>=3.3,<4",
     "email-validator>=2.2,<3",
+    "Pillow>=11,<13",
     "python-dotenv>=1.0,<2",
 ]
 

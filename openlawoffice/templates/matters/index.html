@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Matters &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Matters</p>
+    <h1>Matters</h1>
+    <p class="lede">The work your firm is handling, organized by type and jurisdiction.</p>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-primary" href="{{ url_for('matters.create') }}">New matter</a>
+  </div>
+</div>
+
+{% if matters %}
+  <section class="panel matter-list-panel">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Matter</th>
+            <th scope="col">Type</th>
+            <th scope="col">Jurisdiction</th>
+            <th scope="col">Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for matter in matters %}
+            <tr>
+              <td>
+                <a class="matter-link" href="{{ url_for('matters.detail', matter_id=matter.id) }}">
+                  {{ matter.title }}
+                </a>
+                {% if matter.short_description %}
+                  <span class="matter-snippet">{{ matter.short_description }}</span>
+                {% endif %}
+              </td>
+              <td>{{ matter.matter_type.name }}</td>
+              <td>{{ state_name(matter.jurisdiction) }}</td>
+              <td class="table-date">{{ matter.created_at|localtime("%b %d, %Y") }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% else %}
+  <section class="panel empty-state">
+    <span class="empty-state-mark" aria-hidden="true">M</span>
+    <h2>No matters yet</h2>
+    <p>Create the first matter to begin organizing the firm&rsquo;s work.</p>
+    <a class="button button-primary" href="{{ url_for('matters.create') }}">Create your first matter</a>
+  </section>
+{% endif %}
+{% endblock %}

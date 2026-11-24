@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% from "_forms.html" import field %}
+
+{% block title %}Matter types &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Settings</p>
+    <h1>Matter types</h1>
+    <p class="lede">
+      Manage the categories available when opening a matter. Built-in types can
+      be deactivated but not deleted.
+    </p>
+  </div>
+  <div class="page-head-meta">
+    <span class="chip chip-gold">Administrator</span>
+  </div>
+</div>
+
+{% include "settings/_nav.html" %}
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Add a custom type</h2>
+  </div>
+  <p class="panel-hint">
+    Custom types appear in the matter type menu immediately after they are added.
+  </p>
+  <form method="post" class="inline-form" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="inline-form-field">{{ field(form.name) }}</div>
+    {{ form.submit(class_="button button-primary") }}
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>All matter types</h2>
+    <span class="chip chip-muted">{{ matter_types|length }}</span>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th scope="col">Type</th>
+          <th scope="col">Source</th>
+          <th scope="col">Status</th>
+          <th scope="col">Matters</th>
+          <th scope="col" class="table-actions-heading">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for matter_type in matter_types %}
+          <tr{% if not matter_type.active %} class="is-inactive"{% endif %}>
+            <td><strong>{{ matter_type.name }}</strong></td>
+            <td>
+              <span class="chip chip-muted">
+                {{ "Built-in" if matter_type.is_default else "Custom" }}
+              </span>
+            </td>
+            <td>
+              <span class="chip {{ 'chip-success' if matter_type.active else 'chip-inactive' }}">
+                {{ "Active" if matter_type.active else "Inactive" }}
+              </span>
+            </td>
+            <td>{{ matter_counts.get(matter_type.id, 0) }}</td>
+            <td class="table-actions">
+              <form method="post"
+                    action="{{ url_for('settings.toggle_matter_type', matter_type_id=matter_type.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="button button-secondary button-small">
+                  {{ "Deactivate" if matter_type.active else "Reactivate" }}
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="panel-hint panel-hint-foot">
+    Deactivating a type hides it from new matters. Existing matters keep their
+    type, and at least one type must remain active.
+  </p>
+</section>
+{% endblock %}

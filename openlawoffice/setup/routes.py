@@ -16,7 +16,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from ..bootstrap import database_label, ensure_schema, is_initialized, mark_initialized
 from ..extensions import db
-from ..models import ROLE_ADMIN, User, record_event, utcnow
+from ..models import ROLE_ADMIN, Firm, User, record_event, utcnow
 from ..security import secure_compare
 from .forms import SetupForm
 
@@ -74,6 +74,7 @@ def index():
 
             try:
                 db.session.flush()
+                db.session.add(Firm(name=user.full_name.strip(), updated_by_id=user.id))
                 record_event(
                     "setup.completed", actor=user, detail={"email": user.email}
                 )

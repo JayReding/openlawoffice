@@ -1,14 +1,28 @@
-"""Status and future application modules."""
+"""Status, branding, and future application modules."""
 
 from __future__ import annotations
 
-from flask import Blueprint, current_app, jsonify, redirect, render_template, url_for
+from pathlib import Path
+
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    jsonify,
+    redirect,
+    render_template,
+    send_file,
+    url_for,
+)
 from flask_login import current_user, login_required
-from sqlalchemy import text
+from sqlalchemy import func, select, text
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..bootstrap import is_initialized
+from ..branding import stored_logo_path
 from ..extensions import db
+from ..firm_service import get_firm, has_saved_firm_settings
+from ..models import Matter
 
 bp = Blueprint("main", __name__)
 
@@ -23,7 +37,36 @@ def index():
 @bp.get("/dashboard")
 @login_required
 def dashboard():
-    return render_template("main/dashboard.html")
+    matter_count = db.session.scalar(select(func.count(Matter.id))) or 0
+    return render_template(
+        "main/dashboard.html",
+        firm_settings_reviewed=has_saved_firm_settings(),
+        matter_count=matter_count,
+    )
+
+
+@bp.get("/branding/logo")
+def firm_logo():
+    """Serve the sanitized firm logo publicly for the login page and header."""
+    firm = get_firm()
+    if firm is None or not firm.has_logo:
+        abort(404)
+
+    path = stored_logo_path(firm.logo_stored_name)
+    if path is None or not path.is_file():
+        abort(404)
+
+    extension = Path(firm.logo_stored_name).suffix
+    response = send_file(
+        path,
+        mimetype=firm.logo_content_type,
+        conditional=True,
+        etag=firm.logo_sha256,
+        max_age=86400,
+    )
+    response.headers["Cache-Control"] = "public, max-age=86400"
+    response.headers["Content-Disposition"] = f'inline; filename="firm-logo{extension}"'
+    return response
 
 
 @bp.get("/healthz")

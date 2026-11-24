@@ -23,6 +23,7 @@ def make_app(tmp_path, **overrides):
         "LOGIN_MAX_ATTEMPTS": 3,
         "LOGIN_LOCKOUT_MINUTES": 15,
         "TIMEZONE": "America/New_York",
+        "FIRM_LOGO_UPLOAD_DIR": str(tmp_path / "uploads" / "firm"),
     }
     config.update(overrides)
     return create_app(config)

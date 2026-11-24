@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from flask import Flask, redirect, render_template, request, url_for
 from flask_wtf.csrf import CSRFError
+from sqlalchemy.exc import SQLAlchemyError
 
 from .config import default_config, engine_options
 from .extensions import csrf, db, login_manager, migrate
@@ -23,6 +24,7 @@ CONTENT_SECURITY_POLICY = (
     "form-action 'self'; "
     "frame-ancestors 'none'; "
     "img-src 'self' data:; "
+    "font-src 'self'; "
     "style-src 'self'; "
     "script-src 'self'; "
     "object-src 'none'"
@@ -60,11 +62,15 @@ def _load_or_create_secret_key(app: Flask) -> str:
 def _register_blueprints(app: Flask) -> None:
     from .auth import bp as auth_bp
     from .main import bp as main_bp
+    from .matters import bp as matters_bp
+    from .settings import bp as settings_bp
     from .setup import bp as setup_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(setup_bp)
     app.register_blueprint(main_bp)
+    app.register_blueprint(matters_bp)
+    app.register_blueprint(settings_bp)
 
 
 def _register_request_hooks(app: Flask) -> None:
@@ -153,12 +159,16 @@ def _register_error_handlers(app: Flask) -> None:
 
 
 def _register_template_helpers(app: Flask) -> None:
+    from .us_states import US_STATES
+
     timezone_name = app.config.get("TIMEZONE", "UTC")
     try:
         display_timezone = ZoneInfo(timezone_name)
     except ZoneInfoNotFoundError:  # pragma: no cover - depends on host tzdata
         app.logger.warning("Unknown TIMEZONE %r; falling back to UTC.", timezone_name)
         display_timezone = ZoneInfo("UTC")
+
+    state_names = dict(US_STATES)
 
     @app.template_filter("localtime")
     def format_localtime(
@@ -172,9 +182,13 @@ def _register_template_helpers(app: Flask) -> None:
 
     @app.context_processor
     def inject_globals():
+        from .firm_service import get_firm
+
         return {
             "app_name": app.config["APP_NAME"],
             "current_year": datetime.now(display_timezone).year,
+            "firm": get_firm(),
+            "state_name": lambda code: state_names.get(code, code or "—"),
         }
 
 
@@ -217,6 +231,23 @@ def create_app(test_config: dict | None = None) -> Flask:
     migrate.init_app(app, db)
     login_manager.init_app(app)
     csrf.init_app(app)
+
+    # Additively create missing tables at startup so existing installations
+    # gain new tables (such as firm-wide settings) without revisiting the
+    # first-run setup screen. Existing tables and columns are untouched.
+    from .bootstrap import ensure_schema
+    from .matter_seed import seed_default_matter_types
+
+    with app.app_context():
+        try:
+            ensure_schema()
+            seed_default_matter_types()
+        except SQLAlchemyError:
+            db.session.rollback()
+            app.logger.warning(
+                "Could not prepare the database schema at startup.",
+                exc_info=True,
+            )
 
     _register_blueprints(app)
     _register_request_hooks(app)

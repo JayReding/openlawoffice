@@ -85,7 +85,14 @@ def default_config(instance_path: str) -> dict:
             hours=env_int("SESSION_LIFETIME_HOURS", 12)
         ),
         "REMEMBER_COOKIE_DURATION": timedelta(days=30),
-        "MAX_CONTENT_LENGTH": 1024 * 1024,
+        "MAX_CONTENT_LENGTH": 4 * 1024 * 1024,
+        # Firm logo storage and validation.
+        "FIRM_LOGO_UPLOAD_DIR": os.environ.get("FIRM_LOGO_UPLOAD_DIR")
+        or str(Path(instance_path) / "uploads" / "firm"),
+        "FIRM_LOGO_MAX_BYTES": 2 * 1024 * 1024,
+        "FIRM_LOGO_MAX_DIMENSION": 1600,
+        "FIRM_LOGO_MIN_DIMENSION": 64,
+        "FIRM_LOGO_MAX_PIXELS": 25_000_000,
         # Form security.
         "WTF_CSRF_TIME_LIMIT": 3600,
         "WTF_CSRF_SSL_STRICT": True,

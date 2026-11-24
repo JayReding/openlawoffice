@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% from "_forms.html" import field %}
+
+{% block title %}Firm settings &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Settings</p>
+    <h1>Firm settings</h1>
+    <p class="lede">
+      These details identify your firm across the application and will appear
+      on legal bills. Only the firm name is required.
+    </p>
+  </div>
+  <div class="page-head-meta">
+    <span class="chip chip-gold">Administrator</span>
+  </div>
+</div>
+
+{% include "settings/_nav.html" %}
+
+<form method="post" enctype="multipart/form-data" class="settings-form" novalidate>
+  {{ form.hidden_tag() }}
+
+  <div class="settings-grid">
+    <div class="settings-stack">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Firm identity</h2>
+          <span class="chip chip-muted">Required</span>
+        </div>
+        {{ field(form.name, hint="The name that will appear on bills and throughout the app.") }}
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Firm address</h2>
+        </div>
+        <div class="form-grid">
+          <div class="field-span-2">{{ field(form.address_line_1) }}</div>
+          <div class="field-span-2">{{ field(form.address_line_2) }}</div>
+        </div>
+        <div class="form-grid form-grid-3">
+          <div>{{ field(form.city) }}</div>
+          <div>{{ field(form.state) }}</div>
+          <div>{{ field(form.postal_code) }}</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Contact information</h2>
+        </div>
+        <div class="form-grid">
+          <div>{{ field(form.telephone) }}</div>
+          <div>{{ field(form.email) }}</div>
+          <div class="field-span-2">
+            {{ field(form.website, hint="A bare domain is fine; we will add https://.") }}
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="panel logo-panel">
+      <div class="panel-head">
+        <h2>Firm logo</h2>
+      </div>
+
+      {% if firm and firm.has_logo %}
+        <div class="logo-preview-card">
+          <img src="{{ url_for('main.firm_logo', v=firm.logo_sha256[:12]) }}"
+               width="{{ firm.logo_width }}"
+               height="{{ firm.logo_height }}"
+               alt="{{ firm.name }} logo">
+        </div>
+        <dl class="logo-meta">
+          <div><dt>Dimensions</dt><dd>{{ firm.logo_width }} &times; {{ firm.logo_height }} px</dd></div>
+          <div><dt>File size</dt><dd>{{ (firm.logo_size_bytes / 1024)|round|int }} KB</dd></div>
+          <div><dt>Type</dt><dd>{{ firm.logo_content_type }}</dd></div>
+        </dl>
+      {% else %}
+        <div class="logo-preview-card">
+          <span class="logo-placeholder" aria-hidden="true">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </span>
+        </div>
+        <p class="logo-empty-note">No firm logo has been uploaded.</p>
+      {% endif %}
+
+      {{ field(form.logo, hint="PNG, JPEG, or WebP up to 2 MB. Images are re-encoded and stripped of metadata before storage.") }}
+
+      {% if firm and firm.has_logo %}
+        <label class="checkbox logo-remove">
+          {{ form.remove_logo() }}
+          <span>{{ form.remove_logo.label.text }}</span>
+        </label>
+      {% endif %}
+    </aside>
+  </div>
+
+  <div class="settings-actions">
+    <a class="button button-secondary" href="{{ url_for('main.dashboard') }}">Cancel</a>
+    {{ form.submit(class_="button button-primary") }}
+  </div>
+</form>
+{% endblock %}

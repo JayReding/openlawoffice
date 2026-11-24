@@ -21,8 +21,10 @@
 <section class="stat-grid" aria-label="Practice overview">
   <article class="stat-card">
     <p class="stat-label">Matters</p>
-    <p class="stat-value">&mdash;</p>
-    <p class="stat-note">Matter management is next on the roadmap.</p>
+    <p class="stat-value">{{ matter_count }}</p>
+    <p class="stat-note">
+      <a href="{{ url_for('matters.index') }}">View matters</a>
+    </p>
   </article>
   <article class="stat-card">
     <p class="stat-label">Time this week</p>
@@ -40,7 +42,7 @@
   <section class="panel">
     <div class="panel-head">
       <h2>Your account</h2>
-      <span class="chip chip-muted">Administrator</span>
+      <span class="chip chip-muted">{{ current_user.role|capitalize }}</span>
     </div>
     <dl class="detail-list">
       <div>
@@ -67,13 +69,43 @@
       <h2>Getting started</h2>
     </div>
     <ul class="checklist">
+      {% if current_user.is_admin %}
       <li class="is-done">
         <span class="check" aria-hidden="true">&#10003;</span>
         <span><strong>Administrator account created</strong><small>Setup is locked and this account can sign in.</small></span>
       </li>
-      <li>
-        <span class="check" aria-hidden="true"></span>
-        <span><strong>Add your first matter</strong><small>Matter intake and contacts are planned.</small></span>
+      <li class="{% if firm_settings_reviewed %}is-done{% endif %}"
+          data-checklist-item="firm-settings"
+          data-complete="{{ 'true' if firm_settings_reviewed else 'false' }}">
+        <span class="check" aria-hidden="true">{% if firm_settings_reviewed %}&#10003;{% endif %}</span>
+        <span>
+          <strong>Review firm settings</strong>
+          <small>
+            {% if firm_settings_reviewed %}
+              Firm details are saved and used across the app.
+              <a href="{{ url_for('settings.firm') }}">Edit firm settings</a>
+            {% else %}
+              <a href="{{ url_for('settings.firm') }}">Add your firm&rsquo;s address, contact details, and logo.</a>
+            {% endif %}
+          </small>
+        </span>
+      </li>
+      {% endif %}
+      <li class="{% if matter_count %}is-done{% endif %}"
+          data-checklist-item="first-matter"
+          data-complete="{{ 'true' if matter_count else 'false' }}">
+        <span class="check" aria-hidden="true">{% if matter_count %}&#10003;{% endif %}</span>
+        <span>
+          <strong>Add your first matter</strong>
+          <small>
+            {% if matter_count %}
+              Your first matter is open.
+              <a href="{{ url_for('matters.index') }}">View matters</a>
+            {% else %}
+              <a href="{{ url_for('matters.create') }}">Create your first matter.</a>
+            {% endif %}
+          </small>
+        </span>
       </li>
       <li>
         <span class="check" aria-hidden="true"></span>

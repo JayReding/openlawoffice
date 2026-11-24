@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ matter.title }} &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Matter</p>
+    <h1>{{ matter.title }}</h1>
+    <div class="matter-chips">
+      <span class="chip chip-gold">{{ matter.matter_type.name }}</span>
+      <span class="chip">{{ state_name(matter.jurisdiction) }}</span>
+      {% if not matter.matter_type.active %}
+        <span class="chip chip-inactive">Inactive type</span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-secondary" href="{{ url_for('matters.index') }}">Back to matters</a>
+  </div>
+</div>
+
+<div class="panel-grid matter-detail-grid">
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Description</h2>
+    </div>
+    {% if matter.description %}
+      <div class="matter-description">{{ matter.description }}</div>
+    {% else %}
+      <p class="muted-note">No description has been added to this matter.</p>
+    {% endif %}
+  </section>
+
+  <aside class="panel">
+    <div class="panel-head">
+      <h2>Matter details</h2>
+    </div>
+    <dl class="detail-list">
+      <div>
+        <dt>Matter type</dt>
+        <dd>{{ matter.matter_type.name }}</dd>
+      </div>
+      <div>
+        <dt>Jurisdiction</dt>
+        <dd>{{ state_name(matter.jurisdiction) }}</dd>
+      </div>
+      <div>
+        <dt>Created by</dt>
+        <dd>{{ matter.created_by.full_name if matter.created_by else "—" }}</dd>
+      </div>
+      <div>
+        <dt>Created</dt>
+        <dd>{{ matter.created_at|localtime }}</dd>
+      </div>
+      <div>
+        <dt>Last updated</dt>
+        <dd>{{ matter.updated_at|localtime }}</dd>
+      </div>
+    </dl>
+  </aside>
+</div>
+{% endblock %}
