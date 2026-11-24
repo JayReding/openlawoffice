@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard &middot; {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Dashboard</p>
+    <h1>Good to see you, {{ current_user.full_name.split()[0] }}.</h1>
+    <p class="lede">
+      Your firm&rsquo;s workspace is ready. Timekeeping, billing, and matter
+      management will appear here as they are built.
+    </p>
+  </div>
+  <div class="page-head-meta">
+    <span class="chip chip-gold">{{ current_user.role|capitalize }}</span>
+    <span class="chip">Setup complete</span>
+  </div>
+</div>
+
+<section class="stat-grid" aria-label="Practice overview">
+  <article class="stat-card">
+    <p class="stat-label">Matters</p>
+    <p class="stat-value">&mdash;</p>
+    <p class="stat-note">Matter management is next on the roadmap.</p>
+  </article>
+  <article class="stat-card">
+    <p class="stat-label">Time this week</p>
+    <p class="stat-value">&mdash;</p>
+    <p class="stat-note">Time tracking will roll up here.</p>
+  </article>
+  <article class="stat-card">
+    <p class="stat-label">Outstanding invoices</p>
+    <p class="stat-value">&mdash;</p>
+    <p class="stat-note">Billing and payment status will appear here.</p>
+  </article>
+</section>
+
+<div class="panel-grid">
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Your account</h2>
+      <span class="chip chip-muted">Administrator</span>
+    </div>
+    <dl class="detail-list">
+      <div>
+        <dt>Name</dt>
+        <dd>{{ current_user.full_name }}</dd>
+      </div>
+      <div>
+        <dt>Email</dt>
+        <dd>{{ current_user.email }}</dd>
+      </div>
+      <div>
+        <dt>Member since</dt>
+        <dd>{{ current_user.created_at|localtime("%b %d, %Y") }}</dd>
+      </div>
+      <div>
+        <dt>Last sign-in</dt>
+        <dd>{{ current_user.last_login_at|localtime }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Getting started</h2>
+    </div>
+    <ul class="checklist">
+      <li class="is-done">
+        <span class="check" aria-hidden="true">&#10003;</span>
+        <span><strong>Administrator account created</strong><small>Setup is locked and this account can sign in.</small></span>
+      </li>
+      <li>
+        <span class="check" aria-hidden="true"></span>
+        <span><strong>Add your first matter</strong><small>Matter intake and contacts are planned.</small></span>
+      </li>
+      <li>
+        <span class="check" aria-hidden="true"></span>
+        <span><strong>Track billable time</strong><small>Timer and manual entries are planned.</small></span>
+      </li>
+      <li>
+        <span class="check" aria-hidden="true"></span>
+        <span><strong>Draft and send a bill</strong><small>Invoice generation and delivery are planned.</small></span>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<section class="panel panel-wide">
+  <div class="panel-head">
+    <h2>Roadmap</h2>
+    <span class="chip chip-muted">Skeleton release</span>
+  </div>
+  <div class="roadmap-grid">
+    <article>
+      <h3>Matters &amp; contacts</h3>
+      <p>Open matters, associate clients and opposing parties, and keep a clean activity history.</p>
+    </article>
+    <article>
+      <h3>Time &amp; expenses</h3>
+      <p>Capture billable and non-billable time against matters, with rates and narrative entries.</p>
+    </article>
+    <article>
+      <h3>Billing</h3>
+      <p>Turn unbilled work into invoices, record payments, and export professional legal bills.</p>
+    </article>
+  </div>
+</section>
+{% endblock %}

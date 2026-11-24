@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "openlawoffice"
+version = "0.1.0"
+description = "Free and open-source legal timekeeping, billing, and matter management for U.S. law offices."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "Open Law Office contributors" }]
+keywords = ["legal", "law office", "timekeeping", "billing", "matter management"]
+dependencies = [
+    "Flask>=3.1,<4",
+    "Flask-SQLAlchemy>=3.1,<4",
+    "Flask-Login>=0.6.3,<0.7",
+    "Flask-WTF>=1.2,<2",
+    "Flask-Migrate>=4.0,<5",
+    "SQLAlchemy>=2.0,<3",
+    "email-validator>=2.2,<3",
+    "python-dotenv>=1.0,<2",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.2,<4"]
+mariadb = ["PyMySQL>=1.1,<2"]
+dev = [
+    "pytest>=8.3,<10",
+    "pytest-cov>=6,<8",
+    "ruff>=0.9,<1",
+]
+prod = ["gunicorn>=23,<24"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["openlawoffice"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+filterwarnings = ["error::sqlalchemy.exc.SAWarning"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["E501"]

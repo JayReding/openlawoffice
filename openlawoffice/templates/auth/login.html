@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% from "_forms.html" import field %}
+
+{% block title %}Sign in &middot; {{ app_name }}{% endblock %}
+{% block body_class %}auth-shell{% endblock %}
+{% block main_class %}auth-main{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <aside class="auth-intro">
+    <div class="auth-intro-top">
+      <span class="brand-mark brand-mark-light" aria-hidden="true">OL</span>
+      <span class="auth-intro-name">{{ app_name }}</span>
+    </div>
+    <div class="auth-intro-body">
+      <p class="eyebrow eyebrow-light">Practice management</p>
+      <h1>Counsel, organized.</h1>
+      <p class="auth-intro-copy">
+        Timekeeping, billing, and matter management built for small law offices
+        &mdash; free, open source, and under your control.
+      </p>
+      <ul class="feature-list">
+        <li>Secure, local-first records</li>
+        <li>Time and expenses that become bills</li>
+        <li>Matters at the center of the work</li>
+      </ul>
+    </div>
+    <p class="auth-intro-foot">Private by design. AGPL-3.0 licensed.</p>
+  </aside>
+
+  <section class="auth-panel">
+    <div class="auth-panel-inner">
+      <p class="eyebrow">Secure sign in</p>
+      <h2>Welcome back</h2>
+      <p class="lede">Enter your firm account credentials to continue.</p>
+
+      <form method="post" class="form" novalidate>
+        {{ form.hidden_tag() }}
+        {{ field(form.email) }}
+        {{ field(form.password) }}
+
+        <div class="form-row">
+          <label class="checkbox">
+            {{ form.remember() }}
+            <span>{{ form.remember.label.text }}</span>
+          </label>
+        </div>
+
+        {{ form.submit(class_="button button-primary button-block") }}
+      </form>
+
+      <p class="auth-note">
+        Need access? Contact the administrator at your firm. Passwords are
+        hashed and never stored in plain text.
+      </p>
+    </div>
+  </section>
+</div>
+{% endblock %}

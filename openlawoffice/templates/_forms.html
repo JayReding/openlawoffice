@@ -1,0 +1,12 @@
+{% macro field(input, hint=None) %}
+  <div class="field{% if input.errors %} has-error{% endif %}">
+    {{ input.label(class_="field-label") }}
+    {{ input(class_="input") }}
+    {% if hint %}
+      <p class="field-hint">{{ hint }}</p>
+    {% endif %}
+    {% for error in input.errors %}
+      <p class="field-error">{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endmacro %}

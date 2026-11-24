@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% from "_forms.html" import field %}
+
+{% block title %}First-run setup &middot; {{ app_name }}{% endblock %}
+{% block body_class %}auth-shell{% endblock %}
+{% block main_class %}auth-main{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <aside class="auth-intro">
+    <div class="auth-intro-top">
+      <span class="brand-mark brand-mark-light" aria-hidden="true">OL</span>
+      <span class="auth-intro-name">{{ app_name }}</span>
+    </div>
+    <div class="auth-intro-body">
+      <p class="eyebrow eyebrow-light">First-run setup</p>
+      <h1>Let&rsquo;s open the office.</h1>
+      <p class="auth-intro-copy">
+        This is a one-time step. The account you create now becomes the firm
+        administrator, and this setup screen closes behind you.
+      </p>
+      <ol class="setup-steps">
+        <li class="is-complete">
+          <span class="step-number">1</span>
+          <span><strong>Database</strong><small>{{ database }} is ready</small></span>
+        </li>
+        <li class="is-current">
+          <span class="step-number">2</span>
+          <span><strong>Administrator</strong><small>Name, email, and a strong password</small></span>
+        </li>
+        <li>
+          <span class="step-number">3</span>
+          <span><strong>Get to work</strong><small>Matters, time, and billing follow</small></span>
+        </li>
+      </ol>
+    </div>
+    <p class="auth-intro-foot">No cloud account required. Your data stays in your database.</p>
+  </aside>
+
+  <section class="auth-panel">
+    <div class="auth-panel-inner">
+      <p class="eyebrow">Create administrator</p>
+      <h2>Set up your account</h2>
+      <p class="lede">
+        Use a real email address and a unique passphrase. You can add staff
+        accounts later.
+      </p>
+
+      {% if db_error %}
+        <div class="alert alert-error" role="alert">{{ db_error }}</div>
+        <p class="form-retry">
+          <a class="button button-secondary button-block" href="{{ url_for('setup.index') }}">
+            Retry database connection
+          </a>
+        </p>
+      {% endif %}
+
+      <form method="post" class="form" novalidate>
+        {{ form.hidden_tag() }}
+        {{ field(form.full_name) }}
+        {{ field(form.email) }}
+        {{ field(form.password, hint="At least 12 characters. Length beats complexity; a short passphrase works well.") }}
+        {{ field(form.confirm_password) }}
+        {% if show_setup_token %}
+          {{ field(form.setup_token, hint="Required by this deployment's SETUP_TOKEN configuration.") }}
+        {% endif %}
+        {% if db_error %}
+          {{ form.submit(class_="button button-primary button-block", disabled=True) }}
+        {% else %}
+          {{ form.submit(class_="button button-primary button-block") }}
+        {% endif %}
+      </form>
+
+      <p class="auth-note">
+        After setup, sign in at the normal login page. Keep your database
+        backups somewhere safe &mdash; there is no password reset email yet.
+      </p>
+    </div>
+  </section>
+</div>
+{% endblock %}

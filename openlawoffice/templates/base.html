@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="{% block body_class %}app-shell{% endblock %}">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  {% if current_user.is_authenticated %}
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="{{ url_for('main.dashboard') }}" aria-label="{{ app_name }} home">
+          <span class="brand-mark" aria-hidden="true">OL</span>
+          <span class="brand-text">{{ app_name }}</span>
+        </a>
+        <nav class="main-nav" aria-label="Primary">
+          <a class="nav-link{% if request.endpoint == 'main.dashboard' %} is-active{% endif %}"
+             href="{{ url_for('main.dashboard') }}">Dashboard</a>
+          <span class="nav-link nav-link-muted" title="Planned for a future release">Matters</span>
+          <span class="nav-link nav-link-muted" title="Planned for a future release">Time</span>
+          <span class="nav-link nav-link-muted" title="Planned for a future release">Billing</span>
+        </nav>
+        <div class="user-menu">
+          <span class="user-name">{{ current_user.full_name }}</span>
+          <form method="post" action="{{ url_for('auth.logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="button button-ghost button-small">Sign out</button>
+          </form>
+        </div>
+      </div>
+    </header>
+  {% endif %}
+
+  <main id="main" class="{% block main_class %}page{% endblock %}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="status">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <span>{{ app_name }}</span>
+    <span class="footer-dot" aria-hidden="true">·</span>
+    <span>Free software under the AGPL-3.0</span>
+    <span class="footer-dot" aria-hidden="true">·</span>
+    <span>&copy; {{ current_year }}</span>
+  </footer>
+</body>
+</html>
