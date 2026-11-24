@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Contacts &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Contacts</p>
+    <h1>Contacts</h1>
+    <p class="lede">
+      People and organizations connected to the firm&rsquo;s work.
+    </p>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-secondary" href="{{ url_for('contacts.import_contacts') }}">Import contacts</a>
+    <a class="button button-primary" href="{{ url_for('contacts.create') }}">New contact</a>
+  </div>
+</div>
+
+<form method="get" class="contact-search" role="search">
+  <label class="visually-hidden" for="contact-search-input">Search contacts</label>
+  <input class="input" id="contact-search-input" type="search" name="q"
+         value="{{ query }}" placeholder="Search by name, organization, email, or phone">
+  <button type="submit" class="button button-secondary">Search</button>
+  {% if query %}
+    <a class="button button-secondary" href="{{ url_for('contacts.index') }}">Clear</a>
+  {% endif %}
+</form>
+
+{% if contacts %}
+  <section class="panel matter-list-panel">
+    <div class="table-wrap">
+      <table class="data-table contacts-table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Organization</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for contact in contacts %}
+            <tr>
+              <td>
+                <a class="matter-link" href="{{ url_for('contacts.detail', contact_id=contact.id) }}">
+                  {{ contact.display_name }}
+                </a>
+              </td>
+              <td>
+                <span class="contact-org">
+                  {{ contact.organization or "—" }}
+                  {% if contact.job_title %}
+                    <span class="user-meta">{{ contact.job_title }}</span>
+                  {% endif %}
+                </span>
+              </td>
+              <td>
+                {% if contact.email %}
+                  <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="table-date">
+                {{ contact.phone or contact.mobile or "—" }}
+              </td>
+              <td>
+                <span class="chip chip-muted">{{ contact.source_label }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {% if pagination.pages > 1 %}
+    <nav class="pagination" aria-label="Contact pages">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for('contacts.index', q=query, page=pagination.prev_num) }}">Previous</a>
+      {% endif %}
+      <span>Page {{ pagination.page }} of {{ pagination.pages }}</span>
+      {% if pagination.has_next %}
+        <a href="{{ url_for('contacts.index', q=query, page=pagination.next_num) }}">Next</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <section class="panel empty-state">
+    <span class="empty-state-mark" aria-hidden="true">C</span>
+    {% if query %}
+      <h2>No matching contacts</h2>
+      <p>Try a different name, organization, email address, or phone number.</p>
+      <a class="button button-secondary" href="{{ url_for('contacts.index') }}">Clear search</a>
+    {% else %}
+      <h2>No contacts yet</h2>
+      <p>Add a contact manually or import an existing address book or calendar export.</p>
+      <div class="empty-state-actions">
+        <a class="button button-primary" href="{{ url_for('contacts.create') }}">Create a contact</a>
+        <a class="button button-secondary" href="{{ url_for('contacts.import_contacts') }}">Import contacts</a>
+      </div>
+    {% endif %}
+  </section>
+{% endif %}
+{% endblock %}

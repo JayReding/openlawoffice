@@ -1612,6 +1612,118 @@ a:focus-visible {
   justify-content: flex-start;
 }
 
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.contact-search {
+  display: flex;
+  margin-bottom: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.contact-search .input {
+  width: auto;
+  min-width: min(100%, 280px);
+  flex: 1;
+}
+
+.contacts-table {
+  min-width: 800px;
+}
+
+.contact-org {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.contact-address {
+  color: var(--ink-soft);
+  font-style: normal;
+  line-height: 1.7;
+}
+
+.contact-notes {
+  color: var(--ink-soft);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.empty-state-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.pagination {
+  display: flex;
+  margin-top: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.pagination a {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--navy-soft);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pagination a:hover {
+  border-color: var(--gold);
+  background: var(--gold-wash);
+  color: var(--navy);
+}
+
+.import-formats {
+  display: grid;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.import-format-card h2 {
+  margin-bottom: 0.2rem;
+  font-size: 1.2rem;
+}
+
+.import-format-card p {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.import-format-card .format-extension {
+  margin-bottom: 0.55rem;
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.import-actions {
+  justify-content: flex-end;
+}
+
 @media (max-width: 900px) {
   .settings-grid {
     grid-template-columns: 1fr;
@@ -1619,6 +1731,10 @@ a:focus-visible {
 
   .logo-panel {
     position: static;
+  }
+
+  .import-formats {
+    grid-template-columns: 1fr;
   }
 }
 

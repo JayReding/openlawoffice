@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% from "_forms.html" import field %}
+
+{% block title %}{{ "Edit contact" if contact else "New contact" }} &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Contacts</p>
+    <h1>{{ "Edit contact" if contact else "New contact" }}</h1>
+    <p class="lede">
+      Enter a first name, last name, or organization. All other fields are
+      optional.
+    </p>
+  </div>
+  <div class="page-head-meta">
+    {% if contact %}
+      <a class="button button-secondary" href="{{ url_for('contacts.detail', contact_id=contact.id) }}">Cancel</a>
+    {% else %}
+      <a class="button button-secondary" href="{{ url_for('contacts.index') }}">Back to contacts</a>
+    {% endif %}
+  </div>
+</div>
+
+<form method="post" class="settings-form" novalidate>
+  {{ form.hidden_tag() }}
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Name and organization</h2>
+    </div>
+    <div class="form-grid">
+      <div>{{ field(form.first_name) }}</div>
+      <div>{{ field(form.last_name) }}</div>
+      <div>{{ field(form.organization) }}</div>
+      <div>{{ field(form.job_title) }}</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Contact details</h2>
+    </div>
+    <div class="form-grid form-grid-3">
+      <div>{{ field(form.email) }}</div>
+      <div>{{ field(form.phone) }}</div>
+      <div>{{ field(form.mobile) }}</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Address</h2>
+    </div>
+    <div class="form-grid">
+      <div class="field-span-2">{{ field(form.address_line_1) }}</div>
+      <div class="field-span-2">{{ field(form.address_line_2) }}</div>
+    </div>
+    <div class="form-grid form-grid-3">
+      <div>{{ field(form.city) }}</div>
+      <div>{{ field(form.state) }}</div>
+      <div>{{ field(form.postal_code) }}</div>
+    </div>
+    <div class="form-grid">
+      <div>{{ field(form.country) }}</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Notes</h2>
+    </div>
+    {{ field(form.notes, hint="Optional context, relationship notes, or reminders.") }}
+  </section>
+
+  <div class="settings-actions">
+    {% if contact %}
+      <a class="button button-secondary" href="{{ url_for('contacts.detail', contact_id=contact.id) }}">Cancel</a>
+    {% else %}
+      <a class="button button-secondary" href="{{ url_for('contacts.index') }}">Cancel</a>
+    {% endif %}
+    {{ form.submit(class_="button button-primary") }}
+  </div>
+</form>
+{% endblock %}

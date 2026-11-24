@@ -94,7 +94,7 @@ Defaults live in `openlawoffice/config.py`:
 
 | Setting | Default |
 | --- | --- |
-| `MAX_CONTENT_LENGTH` | 4 MB request cap |
+| `MAX_CONTENT_LENGTH` | 6 MB request cap |
 | `FIRM_LOGO_UPLOAD_DIR` | `instance/uploads/firm` |
 | `FIRM_LOGO_MAX_BYTES` | 2 MB |
 | `FIRM_LOGO_MAX_DIMENSION` | 1600 px |

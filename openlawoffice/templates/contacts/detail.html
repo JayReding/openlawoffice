@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}{{ contact.display_name }} &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Contact</p>
+    <h1>{{ contact.display_name }}</h1>
+    {% if contact.organization or contact.job_title %}
+      <p class="lede">
+        {{ contact.job_title }}{% if contact.job_title and contact.organization %} at {% endif %}{{ contact.organization }}
+      </p>
+    {% endif %}
+    <div class="matter-chips">
+      <span class="chip chip-muted">{{ contact.source_label }}</span>
+    </div>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-secondary" href="{{ url_for('contacts.index') }}">Back to contacts</a>
+    <a class="button button-danger" href="{{ url_for('contacts.delete', contact_id=contact.id) }}">Delete</a>
+    <a class="button button-primary" href="{{ url_for('contacts.edit', contact_id=contact.id) }}">Edit contact</a>
+  </div>
+</div>
+
+<div class="panel-grid contact-detail-grid">
+  <div class="settings-stack">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Contact information</h2>
+      </div>
+      <dl class="detail-list">
+        <div>
+          <dt>Email</dt>
+          <dd>
+            {% if contact.email %}
+              <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+            {% else %}—{% endif %}
+          </dd>
+        </div>
+        <div>
+          <dt>Phone</dt>
+          <dd>{{ contact.phone or "—" }}</dd>
+        </div>
+        <div>
+          <dt>Mobile</dt>
+          <dd>{{ contact.mobile or "—" }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Address</h2>
+      </div>
+      {% if contact.address_lines %}
+        <address class="contact-address">
+          {% for line in contact.address_lines %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}
+        </address>
+      {% else %}
+        <p class="muted-note">No address has been added.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Notes</h2>
+      </div>
+      {% if contact.notes %}
+        <div class="contact-notes">{{ contact.notes }}</div>
+      {% else %}
+        <p class="muted-note">No notes have been added.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <aside class="panel">
+    <div class="panel-head">
+      <h2>Record details</h2>
+    </div>
+    <dl class="detail-list">
+      <div>
+        <dt>Organization</dt>
+        <dd>{{ contact.organization or "—" }}</dd>
+      </div>
+      <div>
+        <dt>Job title</dt>
+        <dd>{{ contact.job_title or "—" }}</dd>
+      </div>
+      <div>
+        <dt>Source</dt>
+        <dd>{{ contact.source_label }}</dd>
+      </div>
+      <div>
+        <dt>Added by</dt>
+        <dd>{{ contact.created_by.full_name if contact.created_by else "—" }}</dd>
+      </div>
+      <div>
+        <dt>Created</dt>
+        <dd>{{ contact.created_at|localtime }}</dd>
+      </div>
+      <div>
+        <dt>Last updated</dt>
+        <dd>{{ contact.updated_at|localtime }}</dd>
+      </div>
+    </dl>
+  </aside>
+</div>
+{% endblock %}

@@ -36,6 +36,8 @@
              href="{{ url_for('main.dashboard') }}">Dashboard</a>
           <a class="nav-link{% if request.endpoint and request.endpoint.startswith('matters.') %} is-active{% endif %}"
              href="{{ url_for('matters.index') }}">Matters</a>
+          <a class="nav-link{% if request.endpoint and request.endpoint.startswith('contacts.') %} is-active{% endif %}"
+             href="{{ url_for('contacts.index') }}">Contacts</a>
           <span class="nav-link nav-link-muted" title="Planned for a future release">Time</span>
           <span class="nav-link nav-link-muted" title="Planned for a future release">Billing</span>
           {% if current_user.is_admin %}

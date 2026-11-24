@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Delete {{ contact.display_name }} &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Contacts</p>
+    <h1>Delete contact</h1>
+    <p class="lede">This action permanently removes the contact.</p>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-secondary" href="{{ url_for('contacts.detail', contact_id=contact.id) }}">Back to contact</a>
+  </div>
+</div>
+
+<section class="panel delete-panel">
+  <span class="delete-warning-icon" aria-hidden="true">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+  </span>
+  <h2>Delete {{ contact.display_name }}?</h2>
+  <p class="delete-warning-copy">
+    This permanently removes this contact record. Existing matters and other
+    records are not deleted.
+  </p>
+
+  <dl class="detail-list delete-summary">
+    <div>
+      <dt>Organization</dt>
+      <dd>{{ contact.organization or "—" }}</dd>
+    </div>
+    <div>
+      <dt>Email</dt>
+      <dd>{{ contact.email or "—" }}</dd>
+    </div>
+    <div>
+      <dt>Source</dt>
+      <dd>{{ contact.source_label }}</dd>
+    </div>
+  </dl>
+
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="settings-actions delete-actions">
+      <a class="button button-secondary" href="{{ url_for('contacts.detail', contact_id=contact.id) }}">Cancel</a>
+      <button type="submit" class="button button-danger">Delete contact permanently</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

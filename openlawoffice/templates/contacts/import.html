@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_forms.html" import field %}
+
+{% block title %}Import contacts &middot; {{ firm.name if firm else app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Contacts</p>
+    <h1>Import contacts</h1>
+    <p class="lede">
+      Upload a contact or calendar export from Outlook, Apple, or Google. Files
+      are parsed in memory and never stored on disk.
+    </p>
+  </div>
+  <div class="page-head-meta">
+    <a class="button button-secondary" href="{{ url_for('contacts.index') }}">Back to contacts</a>
+  </div>
+</div>
+
+<div class="import-formats">
+  <article class="panel import-format-card">
+    <h2>vCard</h2>
+    <p class="format-extension">.vcf</p>
+    <p>Apple Contacts, Google Contacts, and Outlook contact exports.</p>
+  </article>
+  <article class="panel import-format-card">
+    <h2>CSV</h2>
+    <p class="format-extension">.csv</p>
+    <p>Google Contacts and Outlook contact exports using their standard columns.</p>
+  </article>
+  <article class="panel import-format-card">
+    <h2>Calendar</h2>
+    <p class="format-extension">.ics</p>
+    <p>Google, Apple, and Outlook calendar exports. Attendees and organizers with email addresses are imported.</p>
+  </article>
+</div>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Choose a file</h2>
+    <span class="chip chip-muted">Up to 4 MB</span>
+  </div>
+  <form method="post" enctype="multipart/form-data" class="settings-form" novalidate>
+    {{ form.hidden_tag() }}
+    {{ field(
+      form.file,
+      hint="Accepted: .vcf, .vcard, .csv, and .ics. Existing contacts with the same email address are skipped."
+    ) }}
+    <div class="settings-actions import-actions">
+      {{ form.submit(class_="button button-primary") }}
+    </div>
+  </form>
+</section>
+{% endblock %}

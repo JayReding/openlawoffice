@@ -4,6 +4,7 @@ Importing this package registers every model with SQLAlchemy's metadata.
 """
 
 from .audit import AuditEvent, record_event
+from .contact import Contact
 from .firm import Firm
 from .matter import Matter, MatterType
 from .types import UTCDateTime, utcnow
@@ -17,6 +18,7 @@ from .user import (
 
 __all__ = [
     "AuditEvent",
+    "Contact",
     "Firm",
     "Matter",
     "MatterType",

@@ -61,6 +61,7 @@ def _load_or_create_secret_key(app: Flask) -> str:
 
 def _register_blueprints(app: Flask) -> None:
     from .auth import bp as auth_bp
+    from .contacts import bp as contacts_bp
     from .main import bp as main_bp
     from .matters import bp as matters_bp
     from .settings import bp as settings_bp
@@ -71,6 +72,7 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(setup_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(matters_bp)
+    app.register_blueprint(contacts_bp)
     app.register_blueprint(settings_bp)
     app.register_blueprint(users_bp)
 
